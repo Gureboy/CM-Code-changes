@@ -1,4 +1,4 @@
-// Definir la constante para el umbral de vida (25%)
+// Define the constant for the life threshold (25%)
 #define LIFE_THRESHOLD 0.25 // 25%
 
 /mob/living/simple_animal/hostile/creature
@@ -18,19 +18,19 @@
     faction = "creature"
     speed = 4
 
-    // Variables para el sistema de infección
+    // Variables for the infection system
     var/infection_chance = 30
     var/datum/disease/addiction/creature_infection
     var/regen_amount = 15
     var/datum/effects/heal_over_time/heal_effect
     var/datum/xeno_shield/hedgehog_shield/hedgehog_shield_instance
 
-    // Inicializar la enfermedad y regeneración al crear la criatura
+    // Initialize disease and regeneration when the creature is created
     New()
         ..()
         InitializeInfection()
 
-    // Configurar la infección utilizando /datum/disease/addiction
+    // Set up the infection using /datum/disease/addiction
     proc/InitializeInfection()
         if(!creature_infection)
             creature_infection = new /datum/disease/addiction
@@ -50,24 +50,24 @@
             )
             creature_infection.addiction_rate = 0.1
 
-    // Manejador de ataque para propagar la infección y activar regeneración
+    // Attack handler to spread infection and activate regeneration
     attack_hand(mob/living/carbon/human/target)
         ..()
         if(!target || target.stat == DEAD)
             return
 
-        // Intentar infectar al objetivo con una probabilidad determinada
+        // Attempt to infect the target with a certain probability
         if(prob(infection_chance))
             InfectTarget(target)
 
-        // Activar el efecto de regeneración sobre sí mismo
+        // Activate regeneration effect on itself
         ApplyRegeneration()
 
-        // Activar el hedgehog_shield si la vida de la criatura está al 25% o menos
+        // Activate the hedgehog_shield if the creature's life is at or below 25%
         if(health <= maxHealth * LIFE_THRESHOLD && !hedgehog_shield_instance)
             ActivateHedgehogShield()
 
-    // Método para infectar al objetivo con la enfermedad
+    // Method to infect the target with the disease
     proc/InfectTarget(mob/living/carbon/human/target)
         if(!target || target.stat == DEAD)
             return
@@ -84,7 +84,7 @@
 
         target.play_sound('sound/items/hypospray.ogg')
 
-    // Método para aplicar regeneración sobre la criatura
+    // Method to apply regeneration to the creature
     proc/ApplyRegeneration()
         if(!heal_effect)
             heal_effect = new /datum/effects/heal_over_time(src, regen_amount, 5, 1)
@@ -92,10 +92,10 @@
             heal_effect.total_heal_amount += regen_amount
         heal_effect.start()
 
-    // Activar el hedgehog_shield cuando la vida llegue al 25% o menos
+    // Activate the hedgehog_shield when the life reaches 25% or lower
     proc/ActivateHedgehogShield()
         if(!hedgehog_shield_instance)
             hedgehog_shield_instance = new /datum/xeno_shield/hedgehog_shield
-            hedgehog_shield_instance.owner = src // Establecer la criatura como dueño del escudo
+            hedgehog_shield_instance.owner = src // Set the creature as the owner of the shield
             src.visible_message("As the creature's life fades, a horrific, chaotic shield activates... shrapnel tears the air, a sign of doom from beyond the void.")
             src.play_sound('sound/bullets/rocket_ricochet3.ogg')
