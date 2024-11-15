@@ -15,18 +15,18 @@
     faction = "creature"
     speed = 4
 
-    // Variables para el sistema de infección
-    var/infection_chance = 30 // Porcentaje de probabilidad de infectar al objetivo
-    var/datum/disease/addiction/creature_infection // La enfermedad que se aplicará
+    // Variables for the infection system
+    var/infection_chance = 30 // Percentage chance to infect the target
+    var/datum/disease/addiction/creature_infection // The disease that will be applied
 
-    // Inicializar la enfermedad al instanciar la criatura
+    // Initialize the disease upon creature creation
     New()
         ..()
         InitializeInfection()
 
-    // Configurar la infección utilizando /datum/disease/addiction
+    // Setup the infection using /datum/disease/addiction
     proc/InitializeInfection()
-        // Crear una nueva instancia de la enfermedad de adicción
+        // Create a new instance of the addiction disease
         if(!creature_infection)
             creature_infection = new /datum/disease/addiction
             creature_infection.name = "Creature Infection"
@@ -35,7 +35,7 @@
                 list(
                     name = "Mild Compulsion",
                     message = "You feel an unnatural craving...",
-                    symptoms = list(/datum/symptom/shivering)
+                    symptoms = list(/datum/symptom/shivering, /datum/symptom/cough)
                 ),
                 list(
                     name = "Severe Compulsion",
@@ -43,34 +43,34 @@
                     symptoms = list(/datum/symptom/hallucigen)
                 )
             )
-            creature_infection.addiction_rate = 0.1 // Velocidad a la que progresa la adicción
+            creature_infection.addiction_rate = 0.1 // Speed at which addiction progresses
 
-    // Manejador de ataque para propagar la infección
+    // Attack handler to spread infection
     attack_hand(mob/living/carbon/human/target)
-        ..() // Llama al método base para aplicar daño
+        ..() // Call base method to apply damage
         if(!target || target.stat == DEAD)
             return
 
-        // Intentar infectar al objetivo con una probabilidad determinada
+        // Attempt to infect the target with a specified probability
         if(prob(infection_chance))
             InfectTarget(target)
 
-    // Método para infectar al objetivo con la enfermedad
+    // Method to infect the target with the disease
     proc/InfectTarget(mob/living/carbon/human/target)
         if(!target || target.stat == DEAD)
             return
 
-        // Comprobar si ya está infectado para evitar duplicación
+        // Check if already infected to avoid duplication
         if(target.has_disease(creature_infection))
             return
 
-        // Infectar al objetivo con la adicción personalizada
+        // Infect the target with the custom addiction disease
         if(creature_infection)
-            target.addiction = creature_infection // Asigna la adicción al objetivo
-            target.addiction_stage = 1 // Comienza en la primera etapa
+            target.addiction = creature_infection // Assign the addiction to the target
+            target.addiction_stage = 1 // Start at the first stage
             to_chat(target, "[creature_infection.description]")
-            to_chat(world, "[target.name] ha sido infectado por [src.name]!")
+            to_chat(world, "[target.name] has been infected by [src.name]!")
             target.visible_message("[target.name] looks visibly distressed.")
 
-        // Efecto visual y de sonido al ser infectado
+        // Visual and sound effect upon infection
         target.play_sound('sound/items/hypospray.ogg')
