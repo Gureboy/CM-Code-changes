@@ -1,4 +1,3 @@
-// Define the constant for the life threshold (25%)
 #define LIFE_THRESHOLD 0.25 // 25%
 
 /mob/living/simple_animal/hostile/creature
