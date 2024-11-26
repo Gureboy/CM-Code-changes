@@ -5,7 +5,7 @@
      
     var/amount_grown = 0
     health = 1000
-    maxHealth = 10000
+    maxHealth = 1000
     // Inicialización del Blob
     Initialize()
         pixel_x = rand(3, -3)
